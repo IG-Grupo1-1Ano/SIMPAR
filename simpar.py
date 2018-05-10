@@ -4,8 +4,6 @@ from random import randint
 
 class Passageiro:
     
-    #olá
-
     """
     Descreve um passageiro segundo o ponto 2 do enunciado
     """
