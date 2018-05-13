@@ -230,35 +230,31 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos):
         # Verifica se temos passageiros para criar
         if num_pass > 0:
             # Calcula a probabilidade de acrescentar passageiro
-             for n_balcao in range(1, num_balcoes + 1): #aqui precorremos todos os bacções para colocar pessoas na fila
-                if ciclo <= terco:
-                    probabilidade = 100
-                elif ciclo <= terco * 2:
-                    probabilidade = 80
-                else:
-                    probabilidade = 60
-
-                #if probabilidade >= randint(0, 100):
-                    # Obtem fila com menos passageiros
-                    #balcao_pretendido = sorted(balcoes, key=lambda x: x.obtem_fila().size())[0]
+            if ciclo <= terco:
+                probabilidade = 100
+            elif ciclo <= terco * 2:
+                probabilidade = 80
+            else:
+                probabilidade = 60
+               
+            for n_balcao in range(1, num_balcoes + 1): #aqui precorremos todos os bacções para colocar pessoas na fila    
                 temp=randint(0, 100)
                 print('Probabilidade '+str(probabilidade) +' temp '+ str(temp)) #só para perceber como está a funcionar a probabilidade
                 if probabilidade >= temp:
-                #if probabilidade >= randint(0, 100):
                     # Obtem tamanho da fila com menos passageiros
                     fila_mais_curta = min([balcao.obtem_fila().size() for balcao in balcoes])
-
+    
                     # Obtem apenas os balcoes com o tamanha de fila mais curto
                     # (podem por exemplo existir varios balcoes com 0 passageiros)
                     balcoes_filas_curtas = [balcao for balcao in balcoes if balcao.obtem_fila().size() == fila_mais_curta]
-
+    
                     # E escolhemos de forma aleatoria qual usamos
                     balcao_pretendido = choice(balcoes_filas_curtas)
-
+    
                     # Cria passageiro
                     balcao_pretendido.obtem_fila().enqueue(Passageiro(randint(1, num_bag), ciclo))
                     num_pass -= 1
-                    print('criei um passageiro no b ' + str (balcao_pretendido)) #este prin é de controle
+                    print('criei um passageiro no b ' + str (balcao_pretendido)) #este print é de controle
         print("««« CICLO n.º {} »»»".format(ciclo + 1))
 
         atende_passageiros(ciclo, balcoes)
@@ -267,20 +263,28 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos):
 
     # Vazar das filas
     print('********************** Fechou a chegada de novos passageiros **********************')
-    i = ciclos + 1
-    for balcao in balcoes: #vamos aos balcões limpar as filhas
-        print('BALCOES '+str(balcao)+ 'estado da fila'+ str(balcao.obtem_fila().isEmpty()))
-        if balcao.obtem_fila().isEmpty()==False: # se a fila estiver cheia
-            #while any(not balcao.obtem_fila().isEmpty() for balcao in balcoes):
-            while not balcao.obtem_fila().isEmpty(): # toca a atender os passageiros
-                print("««« CICLO ESVAZIA n.º {} »»»".format(i))
-                atende_passageiros(i, balcoes)
-                i += 1
+    conta=0
+    esvazia=True
+    while esvazia==True:
+        for balcao in balcoes: #vamos aos balcões ver se há filas de espera
+            print('BALCOES '+str(balcao)+ 'estado da fila'+ str(balcao.obtem_fila().isEmpty()))
+            if balcao.obtem_fila().isEmpty()==False: # se a fila não estiver vazia
+                conta=conta+1 #conta é incrementado
+        if conta==0: #Se não há filas cheias, sai
+            esvazia=False
+        else:
+            ciclos += 1 # novo ciclo
+            print("««« CICLO ESVAZIA n.º {} »»»".format(ciclos))
+            atende_passageiros(ciclos, balcoes)
+            conta=0 #Volta a zero para controlar o próximo ciclo
+
+        
+
     #Só para verificar
-    for balcao in balcoes:
+    for balcao in balcoes: 
         print('BALCOES'+str(balcao)+ 'estado da fila'+ str(balcao.obtem_fila().isEmpty()))
     apresenta_resultados(balcoes)
 
 
 if __name__ == "__main__":
-    simpar_simula(100, 4, 4, 10)
+    simpar_simula(70, 4, 4, 10)
