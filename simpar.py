@@ -1,11 +1,10 @@
 from pythonds import Queue
-from random import randint
+from random import randint, choice
 
 
 class Passageiro:
-    
     """
-    Descreve um passageiro segundo o ponto 2 do enunciado
+    Descreve um passageiro
     """
 
     def __init__(self, bag_pass, ciclo_in):
@@ -36,7 +35,7 @@ class Passageiro:
 
     def __str__(self):
         """
-        Retorna o passageiro como uma string legível para o utilizador
+        Retorna o passageiro como uma string legivel para o utilizador
 
         Output esperado:
             [b:4 t:2]
@@ -49,7 +48,7 @@ class Passageiro:
 
 class Balcao:
     """
-    Descreve um balcão e a respectiva fila de passageiros segundo o ponto 2 do enunciado
+    Descreve um balcão e a respectiva fila de passageiros
     """
 
     def __init__(self, n_balcao, num_bag):
@@ -60,6 +59,7 @@ class Balcao:
         """
 
         self.n_balcao = n_balcao
+
         self.fila = Queue()
         self.inic_atend = 0
         self.passt_atend = 0
@@ -120,7 +120,7 @@ class Balcao:
 
     def __str__(self):
         """
-        Retorna o balcão como uma string legível para o utilizador
+        Retorna o balcão como uma string legivel para o utilizador
 
         Output esperado:
             Quando tem passageiros na fila:
@@ -140,7 +140,6 @@ class Balcao:
             str_pass = "- {} - ".format(" ".join(passageiros_como_str))
 
         return "Balcão {} tempo {} : {}".format(self.obtem_n_balcao(), self.tempt_esp, str_pass)
-
 
 
 def mostra_balcoes(balcoes):
@@ -169,7 +168,7 @@ def atende_passageiros(tempo, balcoes):
             continue
 
         fila = b.obtem_fila()
-        p = fila.items[-1]  # Para ser FIFO, tem de ser desta forma, porque Queue.enqueue() acrescenta no início da lista
+        p = fila.items[-1]  # Para ser Fifo, tem de ser desta forma porque Queue.enqueue() acrescenta no inicio da lista
         tempo_atendimento = tempo + b.inic_atend
         ut_bag = p.bag_pass / b.bag_utemp
 
@@ -200,7 +199,12 @@ def apresenta_resultados(balcoes):
     for i in balcoes:
         if i.passt_atend > 0:
             print("Balcão {} despachou {} bagagens por ciclo:".format(i.obtem_n_balcao(), i.bag_utemp))
-            print("{} passageiros atendidos com média de bagagens / passageiro = {}".format(i.passt_atend, round(i.numt_bag / i.passt_atend, 1)))
+            print(
+                "{} passageiros atendidos com média de bagagens / passageiro = {}".format(
+                    i.passt_atend,
+                    round(i.numt_bag / i.passt_atend, 1)
+                )
+            )
             print("Tempo médio de espera = {}".format(round(i.passt_atend / i.inic_atend, 1)))
         else:
             print("Balcão {} não atendeu passageiros".format(i.obtem_n_balcao()))
@@ -219,16 +223,16 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos):
     balcoes = []
     terco = ciclos / 3
 
-    for n_balcao in range(0, num_balcoes):
+    for n_balcao in range(1, num_balcoes + 1):
         balcoes.append(Balcao(n_balcao, num_bag))
 
-    # Ocupação das filas
+    # Ocupar das filas
     for ciclo in range(0, ciclos):
-        print("««« CICLO n.º {} »»»".format(ciclo))
+        print("««« CICLO n.º {} »»»".format(ciclo + 1))
 
         atende_passageiros(ciclo, balcoes)
 
-        # Verifica se tempos passageiros para criar
+        # Verifica se temos passageiros para criar
         if num_pass > 0:
             # Calcula a probabilidade de acrescentar passageiro
             if ciclo <= terco:
@@ -238,17 +242,29 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos):
             else:
                 probabilidade = 60
 
+            #if probabilidade >= randint(0, 100):
+                # Obtem fila com menos passageiros
+                #balcao_pretendido = sorted(balcoes, key=lambda x: x.obtem_fila().size())[0]
+
             if probabilidade >= randint(0, 100):
-                # Obtem fila com menos passageiros através do sorted ordena
-                balcao_pretendido = sorted(balcoes, key=lambda x: x.obtem_fila().size())[0]
+                # Obtem tamanho da fila com menos passageiros
+                fila_mais_curta = min([balcao.obtem_fila().size() for balcao in balcoes])
+
+                # Obtem apenas os balcoes com o tamanha de fila mais curto
+                # (podem por exemplo existir varios balcoes com 0 passageiros)
+                balcoes_filas_curtas = [balcao for balcao in balcoes if balcao.obtem_fila().size() == fila_mais_curta]
+
+                # E escolhemos de forma aleatoria qual usamos
+                balcao_pretendido = choice(balcoes_filas_curtas)
 
                 # Cria passageiro
                 balcao_pretendido.obtem_fila().enqueue(Passageiro(randint(1, num_bag), ciclo))
                 num_pass -= 1
 
+
         mostra_balcoes(balcoes)
 
-    # Vazar as filas
+    # Vazar das filas
     i = ciclos
     while any(not balcao.obtem_fila().isEmpty() for balcao in balcoes):
         atende_passageiros(i, balcoes)
