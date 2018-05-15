@@ -1,6 +1,9 @@
+
+import math
 from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
+
 
 
 # *********** O código em baixo vai limpar o ecrã de forma a facilitar a leitura ********** #
@@ -61,13 +64,6 @@ class Passageiro:
 
         return self.ciclo_in
 
-#    def incr_atendidos(self):
-#        """
-#        Incrementa em 1 o passt_atend - total de passageiros atendidos
-#        :return: None
-#        """
-#
-#        self.atendidos += 1
 
     def __str__(self):
         """
@@ -203,7 +199,7 @@ def atende_passageiros(tempo, balcoes):
 
         p = fila.items[-1]  # Para ser Fifo, tem de ser desta forma porque Queue.enqueue() acrescenta no inicio da lista
         tempo_atendimento = tempo + b.inic_atend
-        ut_bag = p.bag_pass / b.bag_utemp
+        ut_bag = math.ceil5(p.bag_pass / b.bag_utemp)
         if ut_bag < tempo_atendimento:
             tempo_de_espera = tempo - p.ciclo_in
 
@@ -246,7 +242,8 @@ def apresenta_resultados(balcoes):
 
 def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     """
-    Corre uma simulação
+    Corre uma simulação7
+
     :param num_pass: o número de passageiros com bagagem previsto para este voo
     :param num_bag: o número máximo de bagagens permitido por passageiro
     :param num_balcoes: o número de balcões abertos para atendimento e despacho de bagagem
@@ -311,7 +308,8 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     # Esvazear das filas
     print('********************** Fechou a chegada de novos passageiros **********************')
     conta = 0
-    esvazia_ciclo = 0
+    #esvazia_ciclo = 0
+    ciclo += 1  # novo ciclo
     esvazia = True
     while esvazia == True:
         for balcao in balcoes:  # vamos aos balcões ver se há filas de espera
@@ -321,9 +319,9 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
         if conta == 0:  # Se não há filas cheias, sai
             esvazia = False
         else:
-            esvazia_ciclo += 1
+     #       esvazia_ciclo += 1
             ciclo += 1  # novo ciclo
-            print("««« CICLO ESVAZIA n.º {} »»»".format(ciclo + esvazia_ciclo))
+            print("««« CICLO ESVAZIA n.º {} »»»".format(ciclo ))
             atende_passageiros(ciclo, balcoes)
             conta = 0  # Volta a zero para controlar o próximo ciclo
 
@@ -461,7 +459,7 @@ if __name__ == "__main__":
             limpa()
             limpa()
             print("...adeus :( ")
-            quit(0)  # Finalizar o programa
+            break # Finalizar o programa
         else:
             invalid = True
             continue  # Volta ao início do ciclo While
