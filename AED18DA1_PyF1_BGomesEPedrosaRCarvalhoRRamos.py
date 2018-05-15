@@ -323,7 +323,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
         else:
             esvazia_ciclo += 1
             ciclo += 1  # novo ciclo
-            print("««« CICLO ESVAZIA n.º {} »»»".format((ciclo - ciclo) + esvazia_ciclo))
+            print("««« CICLO ESVAZIA n.º {} »»»".format(ciclo + esvazia_ciclo))
             atende_passageiros(ciclo, balcoes)
             conta = 0  # Volta a zero para controlar o próximo ciclo
 
