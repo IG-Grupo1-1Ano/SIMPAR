@@ -336,11 +336,11 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
 
 if __name__ == "__main__":
 
-    passa = 0
-    bag = 0
-    balc = 0
-    cicl = 0
-    pench = 0
+    passa = 70
+    bag = 4
+    balc = 4
+    cicl = 10
+    pench = randint(0,100)
 
     invalid = False  # Inicialização da variável de verificação de erro na Escolha
     while True:
