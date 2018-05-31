@@ -1,6 +1,7 @@
 from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
+import names
 
 
 # *********** O código em baixo vai limpar o ecrã de forma a facilitar a leitura ********** #
@@ -183,7 +184,7 @@ def mostra_balcoes(balcoes):
     for balcao in balcoes:
         print(str(balcao))
 
-
+#ponto 4.3
 def atende_passageiros(tempo, balcoes):
     """
     Atende passageiros nos balcões indicados
@@ -207,7 +208,9 @@ def atende_passageiros(tempo, balcoes):
         if ut_bag < tempo_atendimento:
             tempo_de_espera = tempo - p.ciclo_in
 
-            print("Atendido passageiro com {} bagagens no balcão {} com tempo de espera {}".format(
+            print("Atendido {}, {} com {} bagagens no balcão {} com tempo de espera {}".format(
+                    names.get_last_name(),
+                    names.get_first_name(),
                     p.bag_pass,
                     b.obtem_n_balcao(),
                     tempo_de_espera
@@ -222,7 +225,7 @@ def atende_passageiros(tempo, balcoes):
             atendidos += 1
     return atendidos
 
-
+#ponto 4.4
 def apresenta_resultados(balcoes):
     """
     Apresenta os resultados estatísticos finais
@@ -243,7 +246,7 @@ def apresenta_resultados(balcoes):
         else:
             print("Balcão {} não atendeu passageiros".format(i.obtem_n_balcao()))
 
-
+#ponto 4.2
 def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     """
     Corre uma simulação
