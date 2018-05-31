@@ -1,8 +1,7 @@
 ﻿from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
-import math
-import names
+import math, names, pickle
 
 
 # *********** O código em baixo vai limpar o ecrã de forma a facilitar a leitura ********** #
@@ -185,6 +184,8 @@ def mostra_balcoes(balcoes):
     for balcao in balcoes:
         print(str(balcao))
 
+
+
 #ponto 4.3
 def atende_passageiros(tempo, balcoes):
     """
@@ -202,13 +203,12 @@ def atende_passageiros(tempo, balcoes):
             continue
 
         fila = b.obtem_fila()
-
         p = fila.items[-1]  # Para ser Fifo, tem de ser desta forma porque Queue.enqueue() acrescenta no inicio da lista
         tempo_atendimento = tempo + b.inic_atend
         ut_bag = p.bag_pass / b.bag_utemp
         if ut_bag < tempo_atendimento:
             tempo_de_espera = tempo - p.ciclo_in
-
+            pickle.dump(atende_passageiros, open("SimOutput","wb"))
             print("Atendido {}, {} com {} bagagens no balcão {} com tempo de espera {}".format(
                     names.get_last_name(),
                     names.get_first_name(),
@@ -216,8 +216,8 @@ def atende_passageiros(tempo, balcoes):
                     b.obtem_n_balcao(),
                     tempo_de_espera
                 )
+                
             )
-
             b.muda_inic_atend(tempo + 1)
             b.incr_passt_atend()
             b.muda_numt_bag(p)
@@ -225,6 +225,7 @@ def atende_passageiros(tempo, balcoes):
             fila.items.remove(p)
             atendidos += 1
     return atendidos
+
 
 #ponto 4.4
 def apresenta_resultados(balcoes):
