@@ -1,9 +1,236 @@
-﻿from pythonds import Queue
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jun  1 14:44:00 2018
+
+@author: bolsa_000
+"""
+
+from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
-import math, names, pickle
+import names, pickle
+
+class TreeNode:
+    def __init__(self,key,left=None,right=None,parent=None):
+        self.key = key
+        self.leftChild = left
+        self.rightChild = right
+        self.parent = parent
+
+    def hasLeftChild(self):
+        return self.leftChild
+
+    def hasRightChild(self):
+        return self.rightChild
+
+    def isLeftChild(self):
+        return self.parent and self.parent.leftChild == self
+
+    def isRightChild(self):
+        return self.parent and self.parent.rightChild == self
+
+    def isRoot(self):
+        return not self.parent
+
+    def isLeaf(self):
+        return not (self.rightChild or self.leftChild)
+
+    def hasAnyChildren(self):
+        return self.rightChild or self.leftChild
+
+    def hasBothChildren(self):
+        return self.rightChild and self.leftChild
+
+    def replaceNodeData(self,key,lc,rc):
+        self.key = key
+        self.leftChild = lc
+        self.rightChild = rc
+        if self.hasLeftChild():
+            self.leftChild.parent = self
+        if self.hasRightChild():
+            self.rightChild.parent = self
+
+    def preorder(self):
+        print(self.key)
+        if self.leftChild:
+            self.leftChild.preorder()
+        if self.rightChild:
+            self.rightChild.preorder()
+    
+    def inorder(self):
+        if self.leftChild:
+            self.leftChild.inorder()
+        print(str(self.key))
+        if self.rightChild:
+            self.rightChild.inorder()
+    
+    def postorder(self):
+        if self.leftChild:
+            self.leftChild.postorder()
+        if self.rightChild:
+            self.rightChild.postorder()
+        print(self.key)
 
 
+
+class BinarySearchTree:
+
+    def __init__(self):
+        self.root = None
+        self.size = 0
+
+    def length(self):
+        return self.size
+
+    def __len__(self):
+        return self.size
+
+    def put(self,key):
+        if self.root:
+            self._put(key,self.root)
+        else:
+            self.root = TreeNode(key)
+        self.size = self.size + 1
+
+    def _put(self,key,currentNode):
+        if key < currentNode.key:
+            if currentNode.hasLeftChild():
+                   self._put(key,currentNode.leftChild)
+            else:
+                   currentNode.leftChild = TreeNode(key,parent=currentNode)
+        else:
+            if currentNode.hasRightChild():
+                   self._put(key,currentNode.rightChild)
+            else:
+                   currentNode.rightChild = TreeNode(key,parent=currentNode)
+
+    def __setitem__(self,k):
+       self.put(k)
+
+    def get(self,key):
+       if self.root:
+           res = self._get(key,self.root)
+           if res:
+                  return res
+           else:
+                  return None
+       else:
+           return None
+
+    def _get(self,key,currentNode):
+       if not currentNode:
+           return None
+       elif currentNode.key == key:
+           return currentNode
+       elif key < currentNode.key:
+           return self._get(key,currentNode.leftChild)
+       else:
+           return self._get(key,currentNode.rightChild)
+
+    def __getitem__(self,key):
+       return self.get(key)
+
+    def __contains__(self,key):
+       if self._get(key,self.root):
+           return True
+       else:
+           return False
+
+    def delete(self,key):
+      if self.size > 1:
+         nodeToRemove = self._get(key,self.root)
+         if nodeToRemove:
+             self.remove(nodeToRemove)
+             self.size = self.size-1
+         else:
+             raise KeyError('Error, key not in tree')
+      elif self.size == 1 and self.root.key == key:
+         self.root = None
+         self.size = self.size - 1
+      else:
+         raise KeyError('Error, key not in tree')
+
+    def __delitem__(self,key):
+       self.delete(key)
+
+    def spliceOut(self):
+       if self.isLeaf():
+           if self.isLeftChild():
+                  self.parent.leftChild = None
+           else:
+                  self.parent.rightChild = None
+       elif self.hasAnyChildren():
+           if self.hasLeftChild():
+                  if self.isLeftChild():
+                     self.parent.leftChild = self.leftChild
+                  else:
+                     self.parent.rightChild = self.leftChild
+                  self.leftChild.parent = self.parent
+           else:
+                  if self.isLeftChild():
+                     self.parent.leftChild = self.rightChild
+                  else:
+                     self.parent.rightChild = self.rightChild
+                  self.rightChild.parent = self.parent
+
+    def findSuccessor(self):
+      succ = None
+      if self.hasRightChild():
+          succ = self.rightChild.findMin()
+      else:
+          if self.parent:
+                 if self.isLeftChild():
+                     succ = self.parent
+                 else:
+                     self.parent.rightChild = None
+                     succ = self.parent.findSuccessor()
+                     self.parent.rightChild = self
+      return succ
+
+    def findMin(self):
+      current = self
+      while current.hasLeftChild():
+          current = current.leftChild
+      return current
+
+    def remove(self,currentNode):
+         if currentNode.isLeaf(): #leaf
+           if currentNode == currentNode.parent.leftChild:
+               currentNode.parent.leftChild = None
+           else:
+               currentNode.parent.rightChild = None
+         elif currentNode.hasBothChildren(): #interior
+           succ = currentNode.findSuccessor()
+           succ.spliceOut()
+           currentNode.key = succ.key
+           currentNode.payload = succ.payload
+
+         else: # this node has one child
+           if currentNode.hasLeftChild():
+             if currentNode.isLeftChild():
+                 currentNode.leftChild.parent = currentNode.parent
+                 currentNode.parent.leftChild = currentNode.leftChild
+             elif currentNode.isRightChild():
+                 currentNode.leftChild.parent = currentNode.parent
+                 currentNode.parent.rightChild = currentNode.leftChild
+             else:
+                 currentNode.replaceNodeData(currentNode.leftChild.key,
+                                    currentNode.leftChild.payload,
+                                    currentNode.leftChild.leftChild,
+                                    currentNode.leftChild.rightChild)
+           else:
+             if currentNode.isLeftChild():
+                 currentNode.rightChild.parent = currentNode.parent
+                 currentNode.parent.leftChild = currentNode.rightChild
+             elif currentNode.isRightChild():
+                 currentNode.rightChild.parent = currentNode.parent
+                 currentNode.parent.rightChild = currentNode.rightChild
+             else:
+                 currentNode.replaceNodeData(currentNode.rightChild.key,
+                                    currentNode.rightChild.payload,
+                                    currentNode.rightChild.leftChild,
+                                    currentNode.rightChild.rightChild)
+                 
 # *********** O código em baixo vai limpar o ecrã de forma a facilitar a leitura ********** #
 
 def limpa():
@@ -27,6 +254,7 @@ def menu():
     [5] Percentagem de passageiros a encher no primeiro ciclo
     Passageiros: {}   Bagagens: {}   Balcões: {}   Ciclos: {}  Percentagem: {}
     [7] Correr a simulação
+    [8] Pesquisa passageiros antendidos
     [99] para saír...""".format(passa, bag, balc, cicl, pench))
 
 
@@ -187,7 +415,7 @@ def mostra_balcoes(balcoes):
 
 
 #ponto 4.3
-def atende_passageiros(tempo, balcoes):
+def atende_passageiros(tempo, balcoes,listaPass):
     """
     Atende passageiros nos balcões indicados
     :param tempo: Ciclo de simulação
@@ -195,6 +423,7 @@ def atende_passageiros(tempo, balcoes):
     :return: Passageiros colocados em fila
     """
     atendidos = 0
+    p_nome=''
     for b in balcoes:
         if b.obtem_fila().isEmpty():
             # Sem passageiros a processar
@@ -208,12 +437,9 @@ def atende_passageiros(tempo, balcoes):
         ut_bag = p.bag_pass / b.bag_utemp
         if ut_bag < tempo_atendimento:
             tempo_de_espera = tempo - p.ciclo_in
-            p_nome=names.get_last_name(),
-            u_nome=names.get_first_name()
-            pickle.dump(atende_passageiros, open("SimOutput","wb"))
-            print("Atendido {}, {} com {} bagagens no balcão {} com tempo de espera {}".format(
-                    names.get_last_name(),
-                    names.get_first_name(),
+            p_nome=names.get_full_name()
+            print("Atendido, {} com {} bagagens no balcão {} com tempo de espera {}".format(
+                    p_nome,
                     p.bag_pass,
                     b.obtem_n_balcao(),
                     tempo_de_espera
@@ -226,8 +452,9 @@ def atende_passageiros(tempo, balcoes):
             b.muda_tempt_esp(tempo_de_espera)
             fila.items.remove(p)
             atendidos += 1
-    return atendidos
+            listaPass.put(p_nome)
 
+    return atendidos
 
 #ponto 4.4
 def apresenta_resultados(balcoes):
@@ -236,20 +463,30 @@ def apresenta_resultados(balcoes):
     :param balcoes: Lista de balcões
     :return: None
     """
-
+    lista_tmp=[]
     for i in balcoes:
         if i.passt_atend > 0:
-            print("Balcão {} despachou {} bagagens por ciclo:".format(i.obtem_n_balcao(), i.bag_utemp))
-            print(
+            tmp="Balcão {} despachou {} bagagens por ciclo:".format(i.obtem_n_balcao(), i.bag_utemp)
+            lista_tmp.append(tmp)
+            print (tmp)
+
+            #print("Balcão {} despachou {} bagagens por ciclo:".format(i.obtem_n_balcao(), i.bag_utemp))
+            tmp=(
                 "{} passageiros atendidos com média de bagagens / passageiro = {}".format(
                     i.passt_atend,
                     round(i.numt_bag / i.passt_atend, 1)
                 )
             )
-            print("Tempo médio de espera = {}".format(round(i.passt_atend / i.inic_atend, 1)))
+            lista_tmp.append(tmp)
+            print(tmp)
+            tmp=("Tempo médio de espera = {}".format(round(i.passt_atend / i.inic_atend, 1)))
+            lista_tmp.append(tmp)
+            print(tmp)
         else:
-            print("Balcão {} não atendeu passageiros".format(i.obtem_n_balcao()))
-
+            tmp=("Balcão {} não atendeu passageiros".format(i.obtem_n_balcao()))
+            lista_tmp.append(tmp)
+            print(tmp)
+    return lista_tmp
 #ponto 4.2
 def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     """
@@ -265,7 +502,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     total = num_pass
     balcoes = []
     terco = ciclos / 3
-
+    listaPass = BinarySearchTree()
     for n_balcao in range(1, num_balcoes + 1):  # gera balcões
         balcoes.append(Balcao(n_balcao, num_bag))
     # passageiros iniciais
@@ -309,7 +546,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
                     #print('criei um passageiro no b ' + str (balcao_pretendido)) #este print é de controle
         print("««« CICLO n.º {} »»»".format(ciclo + 1))
 
-        atendidos = atendidos + atende_passageiros(ciclo + 1, balcoes)
+        atendidos = atendidos + atende_passageiros(ciclo + 1, balcoes,listaPass)
 
         mostra_balcoes(balcoes)
         if atendidos >= total:
@@ -330,17 +567,19 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
             esvazia_ciclo += 1
             ciclo += 1  # novo ciclo
             print("««« CICLO ESVAZIA n.º {} »»»".format(ciclo + esvazia_ciclo))
-            atende_passageiros(ciclo, balcoes)
+            atende_passageiros(ciclo, balcoes,listaPass)
             conta = 0  # Volta a zero para controlar o próximo ciclo
-        
 
+    #apresenta_resultados(balcoes)
+    with open("SimOutput",'wb') as f: 
+            pickle.dump(apresenta_resultados(balcoes),f)
+            f.close()
+    listaPass.root.inorder()
+    # menu()
 
-# Só para verificar
-#    for balcao in balcoes:
-#        print('BALCOES'+str(balcao)+ 'estado da fila'+ str(balcao.obtem_fila().isEmpty()))
-    apresenta_resultados(balcoes)
-
-
+def fazPesquisa():
+    #aqui vai pedir o intput da pesquisa
+    print('Pesquisa')
 
 if __name__ == "__main__":
 
@@ -349,9 +588,8 @@ if __name__ == "__main__":
     balc = 4
     cicl = 10
     pench = randint(0,100)
-
-    invalid = False  # Inicialização da variável de verificação de erro na Escolha
-    while True:
+    invalid = True  # Inicialização da variável de verificação de erro na Escolha
+    while invalid==True:
         menu()  # Chamada do Menu
         if invalid:  # Verificação se o utilizador escolheu uma opção incorrecta
             print('A opção não é válida')
@@ -464,13 +702,17 @@ if __name__ == "__main__":
 
         elif escolha == 7:
             simpar_simula(passa, bag, balc, cicl, pench)
-
+        elif escolha == 8:
+            fazPesquisa()
+       
         elif escolha == 99:
             limpa()
             limpa()
             print("...adeus :( ")
-            quit(0)  # Finalizar o programa
+            #invalid = False
+            #exit  # Finalizar o programa8
+            
         else:
             invalid = True
             continue  # Volta ao início do ciclo While
-        input('Prima <ENTER> para continuar . . .')
+            input('Prima <ENTER> para continuar . . .')
