@@ -575,7 +575,6 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
             pickle.dump(apresenta_resultados(balcoes),f)
             f.close()
     listaPass.root.inorder()
-    # menu()
 
 def fazPesquisa():
     #aqui vai pedir o intput da pesquisa
