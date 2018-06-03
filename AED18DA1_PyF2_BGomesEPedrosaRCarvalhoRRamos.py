@@ -3,7 +3,7 @@ from random import randint, choice
 from shutil import get_terminal_size
 import names, pickle, math
 
-passTree = None
+
 
 class TreeNode:
     def __init__(self,key,left=None,right=None,parent=None):
@@ -249,7 +249,8 @@ def menu():
     [5] Percentagem de passageiros a encher no primeiro ciclo
     Passageiros: {}   Bagagens: {}   Balcões: {}   Ciclos: {}  Percentagem: {}
     [7] Correr a simulação
-    [8] Pesquisa passageiros antendidos
+    [8] Listagem passageiros em ordem alfabética
+    [9] Pesquisa passageiros antendidos
     [99] para saír...""".format(passa, bag, balc, cicl, pench))
 
 
@@ -549,7 +550,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
         if atendidos >= total:
             break
     print('ATENDIDOS ' + str(atendidos) + ' total ' + str(total))
-    # Esvazear das filas
+    # Esvaziar das filas
     print('********************** Fechou a chegada de novos passageiros **********************')
     conta = 0
     esvazia_ciclo = 1
@@ -569,47 +570,32 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
             #atende_passageiros(ciclo, balcoes)
             conta = 0  # Volta a zero para controlar o próximo ciclo
 
-    #apresenta_resultados(balcoes)
+    #apresenta resultados balcoes e guarda no fich SimOutput
     with open("SimOutput",'wb') as f: 
             pickle.dump(apresenta_resultados(balcoes),f)
             f.close()
-    passTree.root.inorder()
-    print(passTree.length())
     
-
-def getAllKeys(node):
-    if node is None:
-        return list()
-
-    local = list()
-    local.append(node.key)
-    if node.hasLeftChild():
-        local += getAllKeys(node.leftChild)
-    if node.hasRightChild():
-        local += getAllKeys(node.rightChild)
-
-    return local
 
 def fazPesquisa():
     global passTree
-    count = 0
     if passTree == None:
         print ('Não tem passageiros para pesquisar')
     else:
         #aqui vai pedir o intput da pesquisa
-        lst = getAllKeys(passTree.root)
         pesquisa = input(str('Qual o nome do passageiro a pesquisar? \n'))
     
-        lst_filtrado = [t for t in lst if pesquisa in t]
-    
-        print('Pesquisa - {}:'.format(pesquisa))
-    
-        for t in lst_filtrado:
-            count += 1
-            print(t)
-        
-        print (count,'Ocorrências')
+        if passTree.__contains__(pesquisa) == True:
+            print('Pesquisa - {}:'.format(pesquisa) + ' passageiro embarcado')
+        else:
+            print('Pesquisa - {}:'.format(pesquisa) + ' passageiro não embarcado')
 
+def fazListagem():
+    global passTree
+    if passTree == None:
+        print ('Não tem passageiros para listar')
+    else:
+        passTree.root.inorder()
+   
 
 if __name__ == "__main__":
 
@@ -618,6 +604,7 @@ if __name__ == "__main__":
     balc = 4
     cicl = 10
     pench = randint(0,100)
+    passTree = None
     invalid = False  # Inicialização da variável de verificação de erro na Escolha
     while True:
         menu()  # Chamada do Menu
@@ -733,14 +720,15 @@ if __name__ == "__main__":
         elif escolha == 7:
             simpar_simula(passa, bag, balc, cicl, pench)
         elif escolha == 8:
+            fazListagem()
+        elif escolha == 9:
             fazPesquisa()
        
         elif escolha == 99:
             limpa()
             limpa()
             print("...adeus :( ")
-            #invalid = False
-            break  # Finalizar o programa8
+            break  # Finalizar o programa
             
         else:
             invalid = True
