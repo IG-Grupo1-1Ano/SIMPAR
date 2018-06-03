@@ -250,7 +250,7 @@ def menu():
     Passageiros: {}   Bagagens: {}   Balcões: {}   Ciclos: {}  Percentagem: {}
     [7] Correr a simulação
     [8] Listagem passageiros em ordem alfabética
-    [9] Pesquisa passageiros antendidos
+    [9] Pesquisa passageiros atendidos
     [99] para saír...""".format(passa, bag, balc, cicl, pench))
 
 
@@ -448,7 +448,6 @@ def atende_passageiros(tempo, balcoes):
             b.muda_tempt_esp(tempo_de_espera)
             fila.items.remove(p)
             atendidos += 1
-            #passTree.put(p_nome)
 
     return atendidos
 
@@ -544,8 +543,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
         print("««« CICLO n.º {} »»»".format(ciclo + 1))
 
         atendidos = atendidos + atende_passageiros(ciclo + 1, balcoes)
-        p_nome=names.get_full_name()
-        passTree.put(p_nome)
+        passTree.put(names.get_full_name())
         mostra_balcoes(balcoes)
         if atendidos >= total:
             break
@@ -565,8 +563,7 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
             esvazia_ciclo += 1
             print("««« CICLO ESVAZIA n.º {} »»»".format(ciclo + esvazia_ciclo))
             atendidos = atendidos + atende_passageiros(ciclo, balcoes)
-            p_nome=names.get_full_name()
-            passTree.put(p_nome)
+            passTree.put(names.get_full_name())
             #atende_passageiros(ciclo, balcoes)
             conta = 0  # Volta a zero para controlar o próximo ciclo
 
@@ -577,7 +574,6 @@ def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     
 
 def fazPesquisa():
-    global passTree
     if passTree == None:
         print ('Não tem passageiros para pesquisar')
     else:
@@ -590,7 +586,6 @@ def fazPesquisa():
             print('Pesquisa - {}:'.format(pesquisa) + ' passageiro não embarcado')
 
 def fazListagem():
-    global passTree
     if passTree == None:
         print ('Não tem passageiros para listar')
     else:
@@ -598,7 +593,6 @@ def fazListagem():
    
 
 if __name__ == "__main__":
-
     passa = 70
     bag = 4
     balc = 4
