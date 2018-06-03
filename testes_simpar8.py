@@ -1,15 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun  1 14:44:00 2018
-
-@author: bolsa_000
-"""
-
 from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
 import names, pickle
 
+
+# Classe TreeNode 
 class TreeNode:
     def __init__(self,key,left=None,right=None,parent=None):
         self.key = key
@@ -414,7 +409,7 @@ def mostra_balcoes(balcoes):
 
 
 
-#ponto 4.3
+# Ponto 4.3
 def atende_passageiros(tempo, balcoes,listaPass):
     """
     Atende passageiros nos balcões indicados
@@ -456,7 +451,7 @@ def atende_passageiros(tempo, balcoes,listaPass):
 
     return atendidos
 
-#ponto 4.4
+# Ponto 4.4
 def apresenta_resultados(balcoes):
     """
     Apresenta os resultados estatísticos finais
@@ -487,7 +482,8 @@ def apresenta_resultados(balcoes):
             lista_tmp.append(tmp)
             print(tmp)
     return lista_tmp
-#ponto 4.2
+
+# Ponto 4.2
 def simpar_simula(num_pass, num_bag, num_balcoes, ciclos, p_enche):
     """
     Corre uma simulação

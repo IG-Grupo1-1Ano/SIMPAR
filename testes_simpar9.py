@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun  1 14:44:00 2018
-
-@author: BernardoStaClaraGomes/EmanuelPedrosa/RitaCarvalho/RuiRamos
-"""
-
-import math
 from pythonds import Queue
 from random import randint, choice
 from shutil import get_terminal_size
-import names, pickle
+import names, pickle, math
 
 class TreeNode:
     def __init__(self,key,left=None,right=None,parent=None):
